@@ -48,6 +48,9 @@ return [
 
     'expiration' => null,
 
+    'access_token_expiration' => env('SANCTUM_ACCESS_TOKEN_EXPIRATION', 20),
+    'refresh_token_expiration' => env('SANCTUM_REFRESH_TOKEN_EXPIRATION', null),
+
     /*
     |--------------------------------------------------------------------------
     | Token Prefix
