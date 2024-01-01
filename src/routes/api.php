@@ -17,4 +17,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('session')->group(function () {
     Route::post('/', [AuthController::class, 'login']);
+    Route::put('/', [AuthController::class, 'refreshToken'])->middleware(['refresh-access-token']);
 });

@@ -22,7 +22,7 @@ class AuthController extends Controller
         /** @var User */
         $user = Auth::user();
 
-        $accessToken = $user->createToken(TokenName::ACCESS_TOKEN->value, expiresAt: now()->addSeconds(config('sanctum.access_token_expiration')))->plainTextToken;
+        $accessToken = $this->createAccessToken($user);
         $refreshToken = $user->createToken(TokenName::REFRESH_TOKEN->value, expiresAt: ($exp = config('sanctum.refresh_token_expiration')) ? now()->addSeconds($exp) : null)->plainTextToken;
 
         return $this->success([
@@ -30,5 +30,22 @@ class AuthController extends Controller
             'access_token' => $accessToken,
             'refresh_token' => $refreshToken,
         ]);
+    }
+
+    public function refreshToken()
+    {
+        /** @var User */
+        $user = Auth::user();
+
+        $accessToken = $this->createAccessToken($user);
+
+        return $this->success([
+            'access_token' => $accessToken,
+        ]);
+    }
+
+    private function createAccessToken(User $user): string
+    {
+        return $user->createToken(TokenName::ACCESS_TOKEN->value, expiresAt: now()->addSeconds(config('sanctum.access_token_expiration')))->plainTextToken;
     }
 }
