@@ -6,6 +6,7 @@ use App\Enums\CommonError;
 use App\Enums\TokenName;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -15,7 +16,7 @@ class AuthController extends Controller
         $validated = $request->validated();
 
         if (! Auth::attempt($validated)) {
-            return $this->fail(CommonError::ERR_INVALID_CREDS, 'incorrect username or password');
+            return $this->fail(CommonError::ERR_INVALID_CREDS, 'incorrect username or password', Response::HTTP_UNAUTHORIZED);
         }
 
         /** @var User */

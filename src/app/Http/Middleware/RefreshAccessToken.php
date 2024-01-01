@@ -6,6 +6,7 @@ use App\Enums\CommonError;
 use App\Enums\TokenName;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
@@ -31,7 +32,7 @@ class RefreshAccessToken
                 'ok' => false,
                 'err' => CommonError::ERR_INVALID_REFRESH_TOKEN,
                 'msg' => 'invalid refresh token',
-            ]);
+            ], HttpResponse::HTTP_UNAUTHORIZED);
         }
 
         return $next($request);
