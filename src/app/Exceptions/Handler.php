@@ -34,21 +34,21 @@ class Handler extends ExceptionHandler
             //
         });
 
-        $this->renderable(function (Error | Throwable $e, Request $request) {
-            if (!$request->is('api/*')) {
+        $this->renderable(function (Error|Throwable $e, Request $request) {
+            if (! $request->is('api/*')) {
                 return null;
             }
 
             if ($e instanceof HttpExceptionInterface) {
                 $status = $e->getStatusCode();
-            } else if ($e instanceof ValidationException) {
+            } elseif ($e instanceof ValidationException) {
                 $status = $e->status;
-            } else if ($e instanceof AuthenticationException) {
+            } elseif ($e instanceof AuthenticationException) {
                 $status = Response::HTTP_UNAUTHORIZED;
             } else {
                 $status = Response::HTTP_INTERNAL_SERVER_ERROR;
             }
-            
+
             switch ($status) {
                 case Response::HTTP_BAD_REQUEST:
                 case Response::HTTP_UNPROCESSABLE_ENTITY:
@@ -88,7 +88,7 @@ class Handler extends ExceptionHandler
                         'msg' => config('app.debug') ? $e->getMessage() : 'Server Error',
                     ];
                     break;
-                
+
                 default:
                     return null;
                     break;

@@ -21,12 +21,12 @@ class RefreshAccessToken
     public function handle(Request $request, Closure $next): Response
     {
         Auth::setDefaultDriver('sanctum');
-        
+
         Sanctum::authenticateAccessTokensUsing(function (PersonalAccessToken $accessToken, bool $isValid) {
             return $isValid && $accessToken->name === TokenName::REFRESH_TOKEN->value;
         });
 
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json([
                 'ok' => false,
                 'err' => CommonError::ERR_INVALID_REFRESH_TOKEN,
