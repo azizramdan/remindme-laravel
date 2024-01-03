@@ -7,3 +7,19 @@ services:
     user: node
     ports:
       - "3010:3000"
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    image: azizramdan/remindme-api
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx.Dockerfile
+    image: azizramdan/remindme-nginx
+    depends_on:
+      - api
+    ports:
+      - "8010:80"
