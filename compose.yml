@@ -1,7 +1,6 @@
 volumes:
   db_data:
 
-
 services:
   nuxt:
     build:
@@ -19,6 +18,7 @@ services:
       dockerfile: docker/api.Dockerfile
     image: azizramdan/remindme-api
     restart: always
+    tty: true
     depends_on:
       - mysql
       - redis
@@ -28,14 +28,16 @@ services:
   scheduler:
     image: azizramdan/remindme-api
     restart: always
+    tty: true
     depends_on:
       - api
     environment:
       - CONTAINER_ROLE=scheduler
-  
+
   queue:
     image: azizramdan/remindme-api
     restart: always
+    tty: true
     depends_on:
       - api
     environment:
