@@ -17,11 +17,20 @@ jobs:
       - name: Build nuxt
         run: docker compose build nuxt
 
+      - name: Run nuxt service
+        run: docker compose up -d nuxt
+
       - name: Build API
         run: docker compose build api
+
+      - name: Run api service
+        run: docker compose up -d api
 
       - name: Build nginx
         run: docker compose build nginx
 
-      - name: Run tests
+      - name: Run nginx service
+        run: docker compose up -d nginx
+
+      - name: Run test api service
         run: docker compose exec api php artisan test
