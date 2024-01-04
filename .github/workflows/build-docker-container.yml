@@ -1,0 +1,27 @@
+name: Build docker container
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build nuxt
+        run: docker compose build nuxt
+
+      - name: Build API
+        run: docker compose build api
+
+      - name: Build nginx
+        run: docker compose build nginx
+
+      - name: Run tests
+        run: docker compose exec api php artisan test
