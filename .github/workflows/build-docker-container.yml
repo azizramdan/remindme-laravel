@@ -24,7 +24,7 @@ jobs:
         run: docker compose build api
 
       - name: Run api service
-        run: docker compose up -d --wait --wait-timeout 30 api
+        run: docker compose up -d --wait api && docker compose exec api php artisan test
 
       # - name: Build nginx
       #   run: docker compose build nginx
@@ -32,8 +32,8 @@ jobs:
       # - name: Run nginx service
       #   run: docker compose up -d nginx
 
-      - name: Run test api service
-        run: docker compose exec api php artisan test
+      # - name: Run test api service
+        # run: docker compose exec api php artisan test
 
       # - name: DEBUGGING
       #   run: docker compose ps
