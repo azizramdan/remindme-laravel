@@ -24,7 +24,7 @@ jobs:
         run: docker compose build api
 
       - name: Run api service
-        run: docker compose up -d api
+        run: docker compose up -d api && docker compose exec api php artisan test
 
       # - name: Build nginx
       #   run: docker compose build nginx
@@ -35,5 +35,5 @@ jobs:
       # - name: Run test api service
       #   run: docker compose exec api php artisan test
 
-      - name: DEBUGGING
-        run: docker compose ps
+      # - name: DEBUGGING
+      #   run: docker compose ps
