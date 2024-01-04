@@ -28,6 +28,9 @@ RUN docker-php-ext-install mysqli pdo_mysql
 COPY docker/start-container /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
+RUN apk add supercronic
+COPY docker/scheduler /etc/crontabs/
+
 USER 1000
 COPY --from=builder /app /app
 WORKDIR /app

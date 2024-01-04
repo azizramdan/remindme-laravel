@@ -24,6 +24,14 @@ services:
     environment:
       - CONTAINER_ROLE=api
 
+  scheduler:
+    image: azizramdan/remindme-api
+    restart: always
+    depends_on:
+      - api
+    environment:
+      - CONTAINER_ROLE=scheduler
+
   nginx:
     build:
       context: .

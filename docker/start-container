@@ -13,5 +13,7 @@ else
         php artisan db:seed --force
 
         exec php-fpm
+    elif [ "$role" = "scheduler" ]; then
+        exec supercronic /etc/crontabs/scheduler
     fi
 fi
