@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+
+role=${CONTAINER_ROLE:-none}
+
+if [ $# -gt 0 ]; then
+    exec "$@"
+else
+    if [ "$role" = "api" ]; then
+        php artisan optimize
+        php artisan migrate --force
+        php artisan db:seed --force
+
+        exec php-fpm
+    fi
+fi
