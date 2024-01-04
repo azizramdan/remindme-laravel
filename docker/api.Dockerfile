@@ -17,6 +17,12 @@ RUN if [ ! -f .env ]; then \
     sed -i 's/DB_DATABASE=.*/DB_DATABASE=remindme/' .env; \
     sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env; \
     sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env; \
+    sed -i 's/CACHE_DRIVER=.*/CACHE_DRIVER=redis/' .env; \
+    sed -i 's/QUEUE_CONNECTION=.*/QUEUE_CONNECTION=redis/' .env; \
+    sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=redis/' .env; \
+    sed -i 's/REDIS_HOST=.*/REDIS_HOST=redis/' .env; \
+    sed -i 's/REDIS_PASSWORD=.*/REDIS_PASSWORD=null/' .env; \
+    sed -i 's/REDIS_PORT=.*/REDIS_PORT=6379/' .env; \
 fi
 
 RUN composer install
@@ -24,12 +30,18 @@ RUN composer install
 FROM php:8.2-fpm-alpine as runner
 
 RUN docker-php-ext-install mysqli pdo_mysql
+RUN apk add --no-cache pcre-dev $PHPIZE_DEPS \
+    && pecl install redis \
+    && docker-php-ext-enable redis.so
 
 COPY docker/start-container /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
 RUN apk add supercronic
 COPY docker/scheduler /etc/crontabs/
+
+RUN apk add supervisor
+COPY docker/queue.conf /etc/supervisor/conf.d/queue.conf
 
 USER 1000
 COPY --from=builder /app /app

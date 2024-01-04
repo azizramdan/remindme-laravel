@@ -21,6 +21,7 @@ services:
     restart: always
     depends_on:
       - mysql
+      - redis
     environment:
       - CONTAINER_ROLE=api
 
@@ -31,6 +32,14 @@ services:
       - api
     environment:
       - CONTAINER_ROLE=scheduler
+  
+  queue:
+    image: azizramdan/remindme-api
+    restart: always
+    depends_on:
+      - api
+    environment:
+      - CONTAINER_ROLE=queue
 
   nginx:
     build:
@@ -51,3 +60,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=remindme
+
+  redis:
+    image: redis:alpine
+    restart: always
