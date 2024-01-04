@@ -16,16 +16,16 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, exif
           coverage: none
 
-      - name: Change directory to src
-        run: cd src
-
       - name: Run composer install
+        working-directory: ./src
         run: composer install -n --prefer-dist
 
       - name: Prepare Laravel Application
+        working-directory: ./src
         run: |
           cp .env.example .env
           php artisan key:generate
 
       - name: Run tests
+        working-directory: ./src
         run: php artisan test
