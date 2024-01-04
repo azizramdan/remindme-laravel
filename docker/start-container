@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+role=${CONTAINER_ROLE:-none}
+
+if [ $# -gt 0 ]; then
+    exec "$@"
+else
+    if [ "$role" = "api" ]; then
+        php artisan optimize
+        php artisan migrate --force
+        php artisan db:seed --force
+
+        exec php-fpm
+
+    elif [ "$role" = "scheduler" ]; then
+        exec supercronic /etc/crontabs/scheduler
+
+    elif [ "$role" = "queue" ]; then
+        exec supervisord -c /etc/supervisor/conf.d/queue.conf
+
+    fi
+fi

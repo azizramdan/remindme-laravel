@@ -1,0 +1,3 @@
+# see https://github.com/aptible/supercronic#crontab-format
+
+* * * * * php /app/artisan schedule:run

@@ -1,0 +1,66 @@
+volumes:
+  db_data:
+
+
+services:
+  nuxt:
+    build:
+      context: .
+      dockerfile: docker/nuxt.Dockerfile
+    image: azizramdan/remindme-nuxt
+    restart: always
+    user: node
+    ports:
+      - "3010:3000"
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    image: azizramdan/remindme-api
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      - CONTAINER_ROLE=api
+
+  scheduler:
+    image: azizramdan/remindme-api
+    restart: always
+    depends_on:
+      - api
+    environment:
+      - CONTAINER_ROLE=scheduler
+  
+  queue:
+    image: azizramdan/remindme-api
+    restart: always
+    depends_on:
+      - api
+    environment:
+      - CONTAINER_ROLE=queue
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx.Dockerfile
+    image: azizramdan/remindme-nginx
+    restart: always
+    depends_on:
+      - api
+    ports:
+      - "8010:80"
+
+  mysql:
+    image: mysql:8.2
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=remindme
+
+  redis:
+    image: redis:alpine
+    restart: always
