@@ -3,7 +3,7 @@ FROM composer:latest as builder
 COPY src /app
 RUN chown -R 1000:1000 /app
 WORKDIR /app
-USER 1000
+USER 1000:1000
 
 RUN if [ ! -f .env ]; then \
     cp .env.example .env; \
@@ -29,7 +29,7 @@ RUN composer install
 
 FROM php:8.2-fpm-alpine as runner
 
-RUN docker-php-ext-install mysqli pdo_mysql
+RUN docker-php-ext-install pdo_mysql
 RUN apk add --no-cache pcre-dev $PHPIZE_DEPS \
     && pecl install redis \
     && docker-php-ext-enable redis.so
@@ -43,8 +43,15 @@ COPY docker/scheduler /etc/crontabs/
 RUN apk add supervisor
 COPY docker/queue.conf /etc/supervisor/conf.d/queue.conf
 
-USER 1000
+RUN addgroup -g 1000 www && adduser -u 1000 -D -G www www
+
+RUN mkdir /app
+RUN chown -R www:www /app
+
+USER www
+
 COPY --from=builder /app /app
+
 WORKDIR /app
 
 RUN if [ -z "$APP_KEY" ]; then php artisan key:generate; fi
