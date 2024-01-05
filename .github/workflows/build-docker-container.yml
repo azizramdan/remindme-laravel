@@ -14,26 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Build nuxt
-      #   run: docker compose build nuxt
+      - name: Build all images
+        run: docker compose build
 
-      # - name: Run nuxt service
-      #   run: docker compose up -d nuxt
+      - name: Run all service
+        run: docker compose up -d --wait
 
-      - name: Build API
-        run: docker compose build api
-
-      - name: Run api service
-        run: docker compose up -d --wait api && docker compose exec api php artisan test
-
-      # - name: Build nginx
-      #   run: docker compose build nginx
-
-      # - name: Run nginx service
-      #   run: docker compose up -d nginx
-
-      # - name: Run test api service
-        # run: docker compose exec api php artisan test
-
-      # - name: DEBUGGING
-      #   run: docker compose ps
+      - name: Run test api service
+        run: docker compose run --rm api php artisan test
