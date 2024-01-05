@@ -1,0 +1,29 @@
+name: Deploy on tag creation
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-docker-container.yml
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /data/services/remindme-laravel
+            git fetch --tags
+            LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+            git checkout $LATEST_TAG
+            docker compose build
+            docker compose up -d
