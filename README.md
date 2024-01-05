@@ -1,3 +1,22 @@
+# Running the Project
+This project is fully supported using Docker and can be run with zero configuration.
+
+### Build Docker Images
+```bash
+docker compose build
+```
+
+### Launch Docker Containers
+```bash
+docker compose up -d
+```
+The project will be accessible at [http://localhost:3010](http://localhost:3010)
+
+
+Additionally, this project has implemented Continuous Deployment, and the latest version can be accessed at
+[https://remindme.azizramdan.id](https://remindme.azizramdan.id)
+
+----
 # RemindMe - Laravel Challenge
 
 Welcome to Nabitu take home challenge!
