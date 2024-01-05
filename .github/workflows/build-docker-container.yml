@@ -1,0 +1,24 @@
+name: Build docker container
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build all images
+        run: docker compose build
+
+      - name: Run all service
+        run: docker compose up -d --wait
+
+      - name: Run test api service
+        run: docker compose run --rm api php artisan test
