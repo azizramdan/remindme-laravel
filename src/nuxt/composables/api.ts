@@ -5,12 +5,12 @@ import { useAuthStore } from '~/stores/auth'
 export const useApi = <T>(url: string, options: UseFetchOptions<T> = {}) => {
   const config = useRuntimeConfig()
   const token = useAuthStore().access_token
-  const headers: HeadersInit = {
+  const defaultHeaders: HeadersInit = {
     Accept: 'application/json',
   }
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`
+    defaultHeaders['Authorization'] = `Bearer ${token}`
   }
 
   const removeEmptyQuery = (obj: typeof options.query) => {
@@ -31,7 +31,22 @@ export const useApi = <T>(url: string, options: UseFetchOptions<T> = {}) => {
     retry: false,
     key: url,
     watch: false,
-    headers: headers,
+    headers: {
+      ...defaultHeaders,
+      ...options.headers || {},
+    },
+    async onResponseError({ request, response, options }) {
+      const headers = options.headers as Record<string, string>
+      
+      if (response?.status === 401 && headers?.['X-Refresh-Access-Token'] != 'true' && headers?.['X-Retry-After-Refresh-Access-Token'] != 'true') {
+        await useAuthStore().refreshAccessToken()
+
+        headers['X-Retry-After-Refresh-Access-Token'] = 'true'
+        headers['Authorization'] = `Bearer ${useAuthStore().access_token}`
+        
+        return useFetch(request, options as UseFetchOptions<T>)
+      }
+    }
   }
 
   // for nice deep defaults, please use unjs/defu

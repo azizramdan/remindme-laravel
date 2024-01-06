@@ -79,7 +79,7 @@ export const useAuthStore = defineStore({
       if (!data.value?.ok) {
         return {
           success: false,
-          message: error.value?.data?.msg || 'Terjadi kesalahan'
+          message: error.value?.data?.msg || 'Something went wrong'
         }
       }
 
@@ -90,6 +90,29 @@ export const useAuthStore = defineStore({
       return {
         success: true,
       }
+    },
+    async refreshAccessToken() {
+      const { data, error } = await useApiPut('session', {
+        headers: {
+          Authorization: `Bearer ${this.refresh_token}`,
+          'X-Refresh-Access-Token': 'true',
+        },
+        pick: ['ok', 'data', 'msg'],
+      })
+
+      if (!data.value?.ok) {
+        if (error.value?.statusCode === 401) {
+          alert('Session expired, please login again')
+          this.logout()
+          
+          return navigateTo('/login')
+        }
+        
+        alert(error.value?.data?.msg || 'Something went wrong')
+        return
+      }
+
+      this.setAccessToken(data.value.data.access_token)
     },
   },
   getters: {
