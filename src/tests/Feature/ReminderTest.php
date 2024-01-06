@@ -337,4 +337,41 @@ class ReminderTest extends TestCase
             ],
         ];
     }
+
+    public function testGuestCantDeleteReminder()
+    {
+        $this->deleteJson('/api/reminders/1')->assertUnauthorized();
+    }
+
+    public function testUsersCanOnlyDeleteTheirReminder()
+    {
+        $reminder1 = Reminder::factory()->create();
+        $reminder2 = Reminder::factory()->create();
+
+        $this->actingAs($reminder1->user)
+            ->deleteJson('/api/reminders/'.$reminder2->id)
+            ->assertNotFound();
+    }
+
+    public function testUserCanOnlyDeleteUpcomingReminder()
+    {
+        $reminder = Reminder::factory()->create([
+            'sent_at' => now()->getTimestamp(),
+        ]);
+
+        $this->actingAs($reminder->user)
+            ->deleteJson('/api/reminders/'.$reminder->id)
+            ->assertNotFound();
+    }
+
+    public function testUserCanDeleteReminder()
+    {
+        $reminder = Reminder::factory()->create();
+
+        $this->actingAs($reminder->user)
+            ->deleteJson('/api/reminders/'.$reminder->id)
+            ->assertOk();
+
+        $this->assertNull(Reminder::query()->find($reminder->id));
+    }
 }
