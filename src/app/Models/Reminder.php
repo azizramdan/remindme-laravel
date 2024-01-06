@@ -9,6 +9,14 @@ class Reminder extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'title',
+        'description',
+        'remind_at',
+        'event_at',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
