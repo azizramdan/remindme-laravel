@@ -12,7 +12,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    protected function success(array $data = null, int $status = Response::HTTP_OK)
+    protected function success(array|object $data = null, int $status = Response::HTTP_OK)
     {
         $response = [
             'ok' => true,
