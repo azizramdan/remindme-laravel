@@ -2,16 +2,18 @@
 
 namespace Tests\Feature;
 
+use App\Enums\CommonError;
 use App\Models\Reminder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class ReminderTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testGuestCantAccessReminder()
+    public function testGuestCantGetListReminder()
     {
         $this->getJson('/api/reminders')->assertUnauthorized();
     }
@@ -88,5 +90,81 @@ class ReminderTest extends TestCase
             ->getJson('/api/reminders')
             ->assertJsonPath('data.reminders.0.id', 2)
             ->assertJsonPath('data.reminders.1.id', 1);
+    }
+
+    public function testGuestCantCreateReminder()
+    {
+        $this->postJson('/api/reminders')->assertUnauthorized();
+    }
+
+    #[DataProvider('invalidCreateRequestProvider')]
+    public function testUserCantCreateReminderWithInvalidRequestBody(array $body)
+    {
+        $this->actingAs(User::factory()->create())
+            ->postJson('/api/reminders', $body)
+            ->assertBadRequest()
+            ->assertJsonFragment([
+                'ok' => false,
+                'err' => CommonError::ERR_BAD_REQUEST,
+            ]);
+    }
+
+    public static function invalidCreateRequestProvider()
+    {
+        return [
+            [
+                [
+                    // remind_at should be greater than now
+                    'title' => 'foo',
+                    'description' => 'bar',
+                    'remind_at' => now()->subDay()->getTimestamp(),
+                    'event_at' => now()->getTimestamp(),
+                ],
+            ],
+            [
+                [
+                    // event_at should be greater than remind_at
+                    'title' => 'foo',
+                    'description' => 'bar',
+                    'remind_at' => now()->addDay()->getTimestamp(),
+                    'event_at' => now()->getTimestamp(),
+                ],
+            ],
+            [
+                [
+                    // remind_at and event_at should be unix timestamp
+                    'title' => 'foo',
+                    'description' => 'bar',
+                    'remind_at' => now()->addDay()->toDateTimeString(),
+                    'event_at' => now()->addDay(2)->toDateTimeString(),
+                ],
+            ],
+        ];
+    }
+
+    // user can create reminder
+    public function testUserCanCreateReminder()
+    {
+        $remindAt = now()->addDay()->getTimestamp();
+        $eventAt = now()->addDay(2)->getTimestamp();
+
+        $this->actingAs(User::factory()->create())
+            ->postJson('/api/reminders', [
+                'title' => 'foo',
+                'description' => 'bar',
+                'remind_at' => $remindAt,
+                'event_at' => $eventAt,
+            ])
+            ->assertOk()
+            ->assertJsonFragment([
+                'ok' => true,
+                'data' => [
+                    'id' => 1,
+                    'title' => 'foo',
+                    'description' => 'bar',
+                    'remind_at' => $remindAt,
+                    'event_at' => $eventAt,
+                ],
+            ]);
     }
 }
