@@ -26,5 +26,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [ReminderController::class, 'store']);
         Route::get('/{id}', [ReminderController::class, 'show']);
         Route::put('/{id}', [ReminderController::class, 'update']);
+        Route::delete('/{id}', [ReminderController::class, 'destroy']);
     });
 });
