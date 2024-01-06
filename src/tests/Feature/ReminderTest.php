@@ -167,4 +167,49 @@ class ReminderTest extends TestCase
                 ],
             ]);
     }
+
+    public function testGuestCantViewReminder()
+    {
+        $this->getJson('/api/reminders/1')->assertUnauthorized();
+    }
+
+    public function testUsersCanOnlyViewTheirReminder()
+    {
+        $reminder1 = Reminder::factory()->create();
+        $reminder2 = Reminder::factory()->create();
+
+        $this->actingAs($reminder1->user)
+            ->getJson('/api/reminders/'.$reminder2->id)
+            ->assertNotFound();
+    }
+
+    public function testUserCanOnlyViewUpcomingReminder()
+    {
+        $reminder = Reminder::factory()->create([
+            'sent_at' => now()->getTimestamp(),
+        ]);
+
+        $this->actingAs($reminder->user)
+            ->getJson('/api/reminders/'.$reminder->id)
+            ->assertNotFound();
+    }
+
+    public function testUserCanViewReminder()
+    {
+        $reminder = Reminder::factory()->create();
+
+        $this->actingAs($reminder->user)
+            ->getJson('/api/reminders/'.$reminder->id)
+            ->assertOk()
+            ->assertJsonFragment([
+                'ok' => true,
+                'data' => [
+                    'id' => $reminder->id,
+                    'title' => $reminder->title,
+                    'description' => $reminder->description,
+                    'remind_at' => $reminder->remind_at,
+                    'event_at' => $reminder->event_at,
+                ],
+            ]);
+    }
 }
