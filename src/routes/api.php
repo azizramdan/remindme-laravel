@@ -24,5 +24,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('reminders')->group(function () {
         Route::get('/', [ReminderController::class, 'index']);
         Route::post('/', [ReminderController::class, 'store']);
+        Route::get('/{id}', [ReminderController::class, 'show']);
     });
 });

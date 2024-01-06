@@ -37,4 +37,15 @@ class ReminderController extends Controller
 
         return $this->success($reminder->only('id', 'title', 'description', 'remind_at', 'event_at'));
     }
+
+    public function show(int $id)
+    {
+        $reminder = Reminder::query()
+            ->select('id', 'title', 'description', 'remind_at', 'event_at')
+            ->where('user_id', Auth::id())
+            ->where('id', $id)
+            ->firstOrFail();
+
+        return $this->success($reminder);
+    }
 }
