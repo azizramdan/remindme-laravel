@@ -94,7 +94,8 @@ export const useAuthStore = defineStore({
     async refreshAccessToken() {
       const { data, error } = await useApiPut('session', {
         headers: {
-          Authorization: `Bearer ${this.refresh_token}`
+          Authorization: `Bearer ${this.refresh_token}`,
+          'X-Refresh-Access-Token': 'true',
         },
         pick: ['ok', 'data', 'msg'],
       })
