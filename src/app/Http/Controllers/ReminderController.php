@@ -44,6 +44,7 @@ class ReminderController extends Controller
             ->select('id', 'title', 'description', 'remind_at', 'event_at')
             ->where('user_id', Auth::id())
             ->where('id', $id)
+            ->whereNull('sent_at')
             ->firstOrFail();
 
         return $this->success($reminder);
