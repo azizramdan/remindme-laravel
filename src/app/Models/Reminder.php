@@ -17,6 +17,11 @@ class Reminder extends Model
         'event_at',
     ];
 
+    protected $casts = [
+        'remind_at' => 'integer',
+        'event_at' => 'integer',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

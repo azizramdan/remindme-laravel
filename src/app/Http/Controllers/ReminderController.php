@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Reminder\IndexRequest;
 use App\Http\Requests\Reminder\StoreRequest;
+use App\Http\Requests\Reminder\UpdateRequest;
 use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,5 +49,25 @@ class ReminderController extends Controller
             ->firstOrFail();
 
         return $this->success($reminder);
+    }
+
+    public function update(int $id, UpdateRequest $request)
+    {
+        $reminder = Reminder::query()
+            ->where('user_id', Auth::id())
+            ->where('id', $id)
+            ->whereNull('sent_at')
+            ->firstOrFail();
+
+        $validated = $request->validated();
+
+        $request->validate([
+            'remind_at' => ['sometimes', 'numeric', 'min:'.time()],
+            'event_at' => ['sometimes', 'numeric', 'gt:'.$reminder->remind_at],
+        ]);
+
+        $reminder->update($validated);
+
+        return $this->success($reminder->only('id', 'title', 'description', 'remind_at', 'event_at'));
     }
 }
