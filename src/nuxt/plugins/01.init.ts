@@ -11,8 +11,12 @@ export default defineNuxtPlugin(async () => {
     store.setAccessToken(accessToken.value)
     store.setRefreshToken(refreshToken.value)
     store.setUser(user.value as unknown as User)
-
-    // Refresh access token 5 seconds before it expires
-    setInterval(() => store.refreshAccessToken(), 1000 * (config.public.accessTokenExpiration - 5))
   }
+
+  // Refresh access token 5 seconds before it expires
+  setInterval(function () {
+    if (accessToken.value && refreshToken.value && user.value) {
+      store.refreshAccessToken()
+    }
+  }, 1000 * (config.public.accessTokenExpiration - 5))
 })
