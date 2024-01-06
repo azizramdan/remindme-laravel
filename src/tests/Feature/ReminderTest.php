@@ -212,4 +212,129 @@ class ReminderTest extends TestCase
                 ],
             ]);
     }
+
+    public function testGuestCantUpdateReminder()
+    {
+        $this->putJson('/api/reminders/1')->assertUnauthorized();
+    }
+
+    #[DataProvider('invalidUpdateRequestProvider')]
+    public function testUserCantUpdateReminderWithInvalidRequestBody(array $body)
+    {
+        $reminder = Reminder::factory()->create([
+            'remind_at' => now()->addHours(1)->getTimestamp(),
+            'event_at' => now()->addHours(2)->getTimestamp(),
+        ]);
+
+        $this->actingAs($reminder->user)
+            ->putJson('/api/reminders/'.$reminder->id, $body)
+            ->assertBadRequest()
+            ->assertJsonFragment([
+                'ok' => false,
+                'err' => CommonError::ERR_BAD_REQUEST,
+            ]);
+    }
+
+    public static function invalidUpdateRequestProvider()
+    {
+        return [
+            [
+                [
+                    // remind_at should be greater than now
+                    'remind_at' => now()->subHour()->getTimestamp(),
+                ],
+            ],
+            [
+                [
+                    // event_at should be greater than remind_at
+                    'event_at' => now()->getTimestamp(),
+                ],
+            ],
+            [
+                [
+                    // remind_at should be unix timestamp
+                    'remind_at' => now()->addHours(1)->toDateTimeString(),
+                ],
+            ],
+            [
+                [
+                    // event_at should be unix timestamp
+                    'event_at' => now()->addHours(2)->toDateTimeString(),
+                ],
+            ],
+        ];
+    }
+
+    public function testUsersCanOnlyUpdateTheirReminder()
+    {
+        $reminder1 = Reminder::factory()->create();
+        $reminder2 = Reminder::factory()->create();
+
+        $this->actingAs($reminder1->user)
+            ->putJson('/api/reminders/'.$reminder2->id)
+            ->assertNotFound();
+    }
+
+    public function testUserCanOnlyUpdateUpcomingReminder()
+    {
+        $reminder = Reminder::factory()->create([
+            'sent_at' => now()->getTimestamp(),
+        ]);
+
+        $this->actingAs($reminder->user)
+            ->putJson('/api/reminders/'.$reminder->id)
+            ->assertNotFound();
+    }
+
+    #[DataProvider('validUpdateRequestProvider')]
+    public function testUserCanUpdateReminder(array $body)
+    {
+        $reminder = Reminder::factory()->create([
+            'remind_at' => now()->addHours(1)->getTimestamp(),
+            'event_at' => now()->addHours(2)->getTimestamp(),
+        ]);
+
+        $response = $this->actingAs($reminder->user)
+            ->putJson('/api/reminders/'.$reminder->id, $body)
+            ->assertOk()
+            ->assertJsonStructure([
+                'ok',
+                'data' => ['id', 'title', 'description', 'remind_at', 'event_at'],
+            ]);
+
+        foreach ($response->json()['data'] as $key => $value) {
+            if (isset($body[$key])) {
+                $this->assertNotSame($value, $reminder->{$key});
+                $this->assertSame($body[$key], $value);
+            } else {
+                $this->assertSame($value, $reminder->{$key});
+            }
+        }
+    }
+
+    public static function validUpdateRequestProvider()
+    {
+        return [
+            [
+                [
+                    'remind_at' => now()->addHours(1)->addMinutes(30)->getTimestamp(),
+                ],
+            ],
+            [
+                [
+                    'event_at' => now()->addHours(2)->addMinutes(30)->getTimestamp(),
+                ],
+            ],
+            [
+                [
+                    'title' => 'foo',
+                ],
+            ],
+            [
+                [
+                    'description' => 'bar',
+                ],
+            ],
+        ];
+    }
 }
