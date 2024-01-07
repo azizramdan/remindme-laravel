@@ -1,35 +1,29 @@
 FROM composer:latest as builder
 
-COPY src /app
-RUN chown -R 1000:1000 /app
-WORKDIR /app
+RUN mkdir /build
+RUN chown -R 1000:1000 /build
+
 USER 1000:1000
 
-RUN if [ ! -f .env ]; then \
-    cp .env.example .env; \
-    sed -i 's/APP_ENV=.*/APP_ENV=production/' .env; \
-    sed -i 's/APP_DEBUG=.*/APP_DEBUG=false/' .env; \
-    sed -i 's/APP_URL=.*/APP_URL=http:\/\/localhost:8010/' .env; \
-    sed -i 's/LOG_CHANNEL=.*/LOG_CHANNEL=daily/' .env; \
-    sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env; \
-    sed -i 's/DB_HOST=.*/DB_HOST=mysql/' .env; \
-    sed -i 's/DB_PORT=.*/DB_PORT=3306/' .env; \
-    sed -i 's/DB_DATABASE=.*/DB_DATABASE=remindme/' .env; \
-    sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env; \
-    sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env; \
-    sed -i 's/CACHE_DRIVER=.*/CACHE_DRIVER=redis/' .env; \
-    sed -i 's/QUEUE_CONNECTION=.*/QUEUE_CONNECTION=redis/' .env; \
-    sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=redis/' .env; \
-    sed -i 's/REDIS_HOST=.*/REDIS_HOST=redis/' .env; \
-    sed -i 's/REDIS_PASSWORD=.*/REDIS_PASSWORD=null/' .env; \
-    sed -i 's/REDIS_PORT=.*/REDIS_PORT=6379/' .env; \
-    sed -i 's/MAIL_HOST=.*/MAIL_HOST=mailpit/' .env; \
-    sed -i 's/MAIL_PORT=.*/MAIL_PORT=1025/' .env; \
-    sed -i 's/MAIL_FROM_ADDRESS=.*/MAIL_FROM_ADDRESS=remindme@mail.com/' .env; \
-    sed -i 's/MAIL_FROM_NAME=.*/MAIL_FROM_NAME=RemindMe/' .env; \
-fi
+WORKDIR /build
 
-RUN composer install
+COPY src/composer.json .
+COPY src/composer.lock .
+
+RUN composer install --no-scripts
+
+USER root
+
+COPY src /app
+RUN chown -R 1000:1000 /app
+
+USER 1000:1000
+
+WORKDIR /app
+
+RUN cp -r /build/vendor .
+
+RUN composer dump-autoload
 
 FROM php:8.2-fpm-alpine as runner
 
@@ -57,6 +51,30 @@ USER www
 COPY --from=builder /app /app
 
 WORKDIR /app
+
+RUN if [ ! -f .env ]; then \
+    cp .env.example .env; \
+    sed -i 's/APP_ENV=.*/APP_ENV=production/' .env; \
+    sed -i 's/APP_DEBUG=.*/APP_DEBUG=false/' .env; \
+    sed -i 's/APP_URL=.*/APP_URL=http:\/\/localhost:8010/' .env; \
+    sed -i 's/LOG_CHANNEL=.*/LOG_CHANNEL=daily/' .env; \
+    sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env; \
+    sed -i 's/DB_HOST=.*/DB_HOST=mysql/' .env; \
+    sed -i 's/DB_PORT=.*/DB_PORT=3306/' .env; \
+    sed -i 's/DB_DATABASE=.*/DB_DATABASE=remindme/' .env; \
+    sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env; \
+    sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env; \
+    sed -i 's/CACHE_DRIVER=.*/CACHE_DRIVER=redis/' .env; \
+    sed -i 's/QUEUE_CONNECTION=.*/QUEUE_CONNECTION=redis/' .env; \
+    sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=redis/' .env; \
+    sed -i 's/REDIS_HOST=.*/REDIS_HOST=redis/' .env; \
+    sed -i 's/REDIS_PASSWORD=.*/REDIS_PASSWORD=null/' .env; \
+    sed -i 's/REDIS_PORT=.*/REDIS_PORT=6379/' .env; \
+    sed -i 's/MAIL_HOST=.*/MAIL_HOST=mailpit/' .env; \
+    sed -i 's/MAIL_PORT=.*/MAIL_PORT=1025/' .env; \
+    sed -i 's/MAIL_FROM_ADDRESS=.*/MAIL_FROM_ADDRESS=remindme@mail.com/' .env; \
+    sed -i 's/MAIL_FROM_NAME=.*/MAIL_FROM_NAME=RemindMe/' .env; \
+fi
 
 RUN if [ -z "$APP_KEY" ]; then php artisan key:generate; fi
 
