@@ -2,6 +2,8 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
+  ssr: false,
+
   app: {
     head: {
       title: 'RemindMe',
