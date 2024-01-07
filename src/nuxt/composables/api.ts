@@ -44,7 +44,7 @@ export const useApi = <T>(url: string, options: UseFetchOptions<T> = {}) => {
         headers['X-Retry-After-Refresh-Access-Token'] = 'true'
         headers['Authorization'] = `Bearer ${useAuthStore().access_token}`
         
-        return useFetch(request, options as UseFetchOptions<T>)
+        return useApi(request as string, options as UseFetchOptions<T>)
       }
     }
   }
