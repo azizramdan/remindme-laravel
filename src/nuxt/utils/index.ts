@@ -12,3 +12,7 @@ export function unixToDateTime(unix: number) {
 
   return new Intl.DateTimeFormat('en-US', options).format(date);
 }
+
+export function dateStringToUnix(date: string) {
+  return new Date(date).getTime() / 1000;
+}
