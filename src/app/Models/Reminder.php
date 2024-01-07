@@ -15,6 +15,7 @@ class Reminder extends Model
         'description',
         'remind_at',
         'event_at',
+        'sent_at',
     ];
 
     protected $casts = [

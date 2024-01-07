@@ -21,7 +21,7 @@ class ReminderFactory extends Factory
 
         return [
             'user_id' => User::factory(),
-            'title' => fake()->title(),
+            'title' => fake()->sentence(2),
             'description' => fake()->text(),
             'remind_at' => fake()->dateTimeBetween('+1 hour', $eventAt)->getTimestamp(),
             'event_at' => $eventAt->getTimestamp(),

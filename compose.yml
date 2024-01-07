@@ -66,3 +66,9 @@ services:
   redis:
     image: redis:alpine
     restart: always
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: always
+    ports:
+        - "8125:8025"

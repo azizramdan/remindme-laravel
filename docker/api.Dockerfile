@@ -23,6 +23,10 @@ RUN if [ ! -f .env ]; then \
     sed -i 's/REDIS_HOST=.*/REDIS_HOST=redis/' .env; \
     sed -i 's/REDIS_PASSWORD=.*/REDIS_PASSWORD=null/' .env; \
     sed -i 's/REDIS_PORT=.*/REDIS_PORT=6379/' .env; \
+    sed -i 's/MAIL_HOST=.*/MAIL_HOST=mailpit/' .env; \
+    sed -i 's/MAIL_PORT=.*/MAIL_PORT=1025/' .env; \
+    sed -i 's/MAIL_FROM_ADDRESS=.*/MAIL_FROM_ADDRESS=remindme@mail.com/' .env; \
+    sed -i 's/MAIL_FROM_NAME=.*/MAIL_FROM_NAME=RemindMe/' .env; \
 fi
 
 RUN composer install
