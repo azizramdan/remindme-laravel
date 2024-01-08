@@ -31,25 +31,27 @@ export const useApi = <T>(url: string, options: UseFetchOptions<T> = {}) => {
     retry: false,
     key: url,
     watch: false,
-    headers: {
-      ...defaultHeaders,
-      ...options.headers || {},
-    },
+    headers: defaultHeaders,
     async onResponseError({ request, response, options }) {
-      const headers = options.headers as Record<string, string>
-      
-      if (response?.status === 401 && headers?.['X-Refresh-Access-Token'] != 'true' && headers?.['X-Retry-After-Refresh-Access-Token'] != 'true') {
+      const headers: HeadersInit = {}
+
+      Object.entries(options.headers || {}).forEach(([key, value]) => {
+        headers[key] = value
+      })
+
+      if (response?.status === 401 && headers['X-Refresh-Access-Token'] != 'true' && headers['X-Retry-After-Refresh-Access-Token'] != 'true') {
         await useAuthStore().refreshAccessToken()
 
         headers['X-Retry-After-Refresh-Access-Token'] = 'true'
         headers['Authorization'] = `Bearer ${useAuthStore().access_token}`
-        
+
+        options.headers = headers
+
         return useApi(request as string, options as UseFetchOptions<T>)
       }
     }
   }
 
-  // for nice deep defaults, please use unjs/defu
   const params = defu(options, defaults)
 
   return useFetch(url, params)
