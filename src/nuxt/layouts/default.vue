@@ -3,7 +3,7 @@ import { initDropdowns } from 'flowbite'
 
 useHead({
   bodyAttrs: {
-    class: 'bg-gray-50 dark:bg-gray-900'
+    class: 'bg-slate-50 dark:bg-gray-900'
   }
 })
 
@@ -40,7 +40,7 @@ const logout = () => {
 
 <template>
   <div>
-    <nav class="bg-white border-gray-200 dark:bg-gray-900">
+    <nav class="bg-white border-gray-200 dark:bg-slate-900">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <NuxtLink to="/" class="flex items-center space-x-3 rtl:space-x-reverse">
           <img src="https://arlab.dev/logo.png" class="h-8 invert dark:invert-0" alt="Logo" />
@@ -61,7 +61,7 @@ const logout = () => {
           </svg>
         </button>
         <div :class="{'md:hidden': !useAuthStore().isAuthenticated}" class="hidden w-full md:block md:w-auto" id="navbar-default">
-          <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-slate-900 dark:border-gray-700">
             <li>
               <NuxtLink to="/reminders" active-class="bg-nabitu-100 dark:bg-nabitu-900" class="block py-2 px-3 rounded md:text-nabitu-700 md:p-2 hover:bg-nabitu-100 dark:hover:bg-nabitu-900 dark:text-white md:dark:text-nabitu-500" aria-current="page">Reminder</NuxtLink>
             </li>
@@ -73,6 +73,10 @@ const logout = () => {
       </div>
     </nav>
 
-    <slot />
+    <div class="container mx-auto text-slate-700 dark:text-slate-400 py-8">
+      <slot />
+    </div>
+
+    <TheToastContainer />
   </div>
 </template>  

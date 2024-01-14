@@ -2,6 +2,12 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
+  typescript: {
+    strict: true,
+  },
+
+  ssr: false,
+
   app: {
     head: {
       title: 'RemindMe',
@@ -11,6 +17,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
+    '@vee-validate/nuxt',
   ],
 
   runtimeConfig: {
