@@ -10,11 +10,13 @@ docker compose build
 ```bash
 docker compose up -d
 ```
-The project will be accessible at [http://localhost:3010](http://localhost:3010)
+The project will be accessible at [http://localhost:3010](http://localhost:3010)  
+and Mailpit UI can be accessed at [http://localhost:8125](http://localhost:8125)
 
 
 Additionally, this project has implemented Continuous Deployment, and the latest version can be accessed at
-[https://remindme.azizramdan.id](https://remindme.azizramdan.id)
+[https://remindme.azizramdan.id](https://remindme.azizramdan.id)  
+and Mailpit UI can be accessed at [https://mailpitui-remindme.azizramdan.id](https://mailpitui-remindme.azizramdan.id)
 
 ----
 # RemindMe - Laravel Challenge
