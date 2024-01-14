@@ -20,7 +20,11 @@ async function store(values: any) {
       throw error
     }
 
-    alert('Reminder created')
+    useEventEmit('toast:push', {
+      icon: 'success',
+      message: 'Reminder created',
+    })
+
     navigateTo('/reminders')
   } catch (error) {
     console.error(error);

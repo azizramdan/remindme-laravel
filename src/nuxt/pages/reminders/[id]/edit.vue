@@ -92,7 +92,10 @@ async function update() {
       throw error
     }
 
-    alert('Reminder updated')
+    useEventEmit('toast:push', {
+      icon: 'success',
+      message: 'Reminder updated',
+    })
   } catch (error) {
     console.error(error);
     alert('Something went wrong')

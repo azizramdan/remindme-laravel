@@ -76,5 +76,7 @@ const logout = () => {
     <div class="container mx-auto text-slate-700 dark:text-slate-400 py-8">
       <slot />
     </div>
+
+    <TheToastContainer />
   </div>
 </template>  
