@@ -55,7 +55,7 @@ function showDeleteModal() {
     </div>
 
     <div class="mt-10">
-      <div class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Event Name</div>
+      <div class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</div>
       <div>{{ reminder.title }}</div>
     </div>
     <div class="mt-4">

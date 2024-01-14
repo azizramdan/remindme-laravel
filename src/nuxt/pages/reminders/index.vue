@@ -103,7 +103,7 @@ function deleteSuccess() {
               #
             </th>
             <th scope="col" class="px-6 py-4">
-              Event Name
+              Title
             </th>
             <th scope="col" class="px-6 py-4">
               Reminder Date & Time

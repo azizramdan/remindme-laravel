@@ -11,7 +11,7 @@
 
 This is a friendly reminder about the upcoming event in your schedule.
 
-**Event Name**: {{ $reminder->title }}  
+**Title**: {{ $reminder->title }}  
 **Date and Time**: {{ $carbon::parse($reminder->event_at)->format('F j, Y, g:i a') }}  
 **Description**: {{ $reminder->description }}  
 
