@@ -68,7 +68,7 @@ function showDeleteModal() {
     </div>
     <div class="mt-4">
       <div class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</div>
-      <div>{{ reminder.description }}</div>
+      <div class="whitespace-pre-line">{{ reminder.description }}</div>
     </div>
 
     <LazyReminderDeleteModal @success="navigateTo('/reminders')" />
