@@ -1,3 +1,4 @@
+// TODO: include timezone in date
 export function unixToDateTime(unix: number) {
   const date = new Date(unix * 1000);
 
@@ -8,6 +9,7 @@ export function unixToDateTime(unix: number) {
     hour: 'numeric',
     minute: 'numeric',
     hour12: true,
+    timeZoneName: 'short',
   };
 
   return new Intl.DateTimeFormat('en-US', options).format(date);
